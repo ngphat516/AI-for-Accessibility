@@ -1,5 +1,9 @@
-function LoginLayout(){
-    <div className="login-wrapper"></div>
+
+
+function LoginLayout({children}){
+   return(<div className="login-wrapper">
+        {children}
+   </div>)
 }
 
 export default LoginLayout;

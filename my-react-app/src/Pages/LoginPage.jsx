@@ -1,10 +1,8 @@
-import LoginLayout from 'LoginLayout.jsx'
-
 
 function LoginPage(){
 
     return(
-        <LoginLayout className="login-container">
+    
         
         <section className="login-box">
 
@@ -13,9 +11,10 @@ function LoginPage(){
             <button className = "login-btn"> Tiếp tục với Google </button>
 
             <p className = "login-hint">Hoặc nhấn Ctrl + ? để đăng nhập hoặc đăng ký</p>
+            
         </section>
     
-        </LoginLayout>
+    
         
     )
 

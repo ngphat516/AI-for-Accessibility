@@ -1,10 +1,11 @@
-import LoginLayout from "LoginLayout.jsx";
+import LoginLayout from "./Layout/LoginLayout";
 import LoginPage from "./Pages/LoginPage";
 function App() {
   return (
     <>
-      <LoginLayout />
-      <LoginPage />
+      <LoginLayout>
+        <LoginPage/>
+      </LoginLayout>
     </>
   );
 }
