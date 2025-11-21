@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+.bar-wrapper {
+  @apply fixed bg-gray-500 h-15 w-full;
+}
+
+.nav {
+  @apply flex h-15;
+}
+.nav li {
+  @apply inline-block mr-6 pl-5;
+}
+
+.nav li:last-child {
+  @apply ml-auto;
+}
+
+.nav li a {
+  @apply inline-flex items-center justify-center h-15 px-6 no-underline;
+}
