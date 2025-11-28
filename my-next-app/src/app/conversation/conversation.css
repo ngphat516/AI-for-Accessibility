@@ -1,0 +1,22 @@
+    @import "tailwindcss";
+    .conversation-wrapper{
+        @apply flex flex-col h-full  flex-1 min-h-0
+    }
+    .conversation-bar{
+        @apply flex justify-between items-center bg-gray-300 px-6 py-3 border-b border-gray-400 pt-[72px];
+    }
+    .conversation-main{
+        @apply flex-1 mt-2 
+    }
+    .conversation-input-row{
+        @apply w-full mt-auto; /* đẩy input xuống sát footer */
+    }
+    .input-wrapper{
+        @apply relative flex justify-between items-center bg-gray-200 p-4 w-full
+    }
+    .conversation-text{
+        @apply px-4 py-3 bg-gray-500 outline-none rounded-xl w-full pr-32
+    }
+    .conversation-btn{
+        @apply absolute px-4 py-3 bg-gray-300 rounded-xl text-sm absolute right-6 top-1/2 -translate-y-1/2
+    }
