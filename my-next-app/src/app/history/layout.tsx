@@ -1,7 +1,7 @@
-import "./conversation.css";
+import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
-export default function ConversationLayout({
+export default function HistoryLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -12,7 +12,7 @@ export default function ConversationLayout({
         <Navbar />
       </div>
 
-      <div className="flex-1 flex flex-col pb-[72px] min-h-0">{children}</div>
+      <div className="flex-1 ">{children}</div>
 
       <div className="fixed bottom-0 left-0 w-full z-50">
         <Footer />

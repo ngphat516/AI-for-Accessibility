@@ -62,7 +62,6 @@ export default function NotePage(){
                             <button className="delete-btn" onClick={() => handleDeleteNote(item.id)}>
                               <p className="absolute text-[12px] top-4 right-4">XÓA</p>
                             </button>
-                              
                         `     <p className="absolute text-[12px] top-4 right-12">CHỈNH SỬA</p>
                               <p className="absolute text-[12px] top-10 left-4">THUỘC VỀ ĐOẠN CHAT NÀO</p>
                               <p className="absolute text-[12px] top-15">NGÀY TẠO</p>
