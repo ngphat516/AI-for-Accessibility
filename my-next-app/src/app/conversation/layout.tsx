@@ -15,7 +15,7 @@ export default function ConversationLayout({
       <div className="flex-1 flex flex-col pb-[72px] min-h-0">{children}</div>
 
       <div className="fixed bottom-0 left-0 w-full z-50">
-        <Footer />
+        <Footer/>
       </div>
     </div>
   );

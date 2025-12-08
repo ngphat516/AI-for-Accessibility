@@ -11,7 +11,7 @@
   min-height: 0 !important; 
 }
 .left-panel {
-  @apply flex-1 pr-4 flex-col flex min-h-0 ;
+  @apply flex-1 flex-col flex min-h-0 ;
 }
 .conversation-main {
   @apply flex-1 mt-2 min-h-0;
