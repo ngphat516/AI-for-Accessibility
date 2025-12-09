@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
+.dashboard-wrapper{
+    @apply flex flex-col flex-1 min-h-0  mt-[60px];
+}
+
 .chat-navbar{
-    @apply flex justify-between items-center bg-gray-300 px-6 py-3 border-b border-gray-400 pt-[72px]
+    @apply flex justify-between items-center bg-gray-300 px-6 py-3 border-b border-gray-400 
 }
 
 .chat-title{
@@ -86,4 +90,10 @@
 
 .note-link{
     @apply w-28
+}
+.right-panel-wrapper {
+  @apply flex w-full items-center mt-2 flex-col h-full flex-1 min-h-0;
+}
+.right-panel {
+  @apply flex flex-col min-h-0;
 }
