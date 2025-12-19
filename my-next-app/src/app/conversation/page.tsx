@@ -76,7 +76,7 @@ export default function ConversationPage() {
                 className="conversation-text"
                 placeholder="NHẬP"
               />
-              <button className="conversation-btn">TỔ HỢP PHÍM RUN</button>
+              <button className="conversation-btn">TỔ HỢP PHÍM RUNa</button>
             </div>
           </div>
         </div>
