@@ -1,95 +1,70 @@
-"use client";
 
-import './history.css'
-import { useEffect, useState } from 'react'
+import React, { useRef, useEffect } from 'react';
+import SidebarNotes from '../components/SidebarNotes';
+import { Note } from '../../types';
+import { FocusSection } from '../../types';
+import { useHistoryHotkeys } from './useHistoryHotkeys';
 
-type Note = {
-    id : number;
-    text: string;
+interface HistoryViewProps {
+  isSidebarOpen: boolean;
+  notes: Note[];
+  onSaveNote: (noteData: Partial<Note>, editingId?: string) => void;
+  onDeleteNote: (id: string) => void;
+  focus: { section: FocusSection, index: number };
 }
 
-export default function HistoryPage(){
-    
-     const [openRightPanel, setOpenRightPanel] = useState(false);
+const HistoryView: React.FC<HistoryViewProps> = ({ isSidebarOpen, notes, onSaveNote, onDeleteNote, focus }) => {
+  const searchRef = useRef<HTMLInputElement>(null);
+  const historyRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-    useEffect(() => {
-    const handler = () => setOpenRightPanel(prev => !prev);
+  const historyItems = Array.from({ length: 6 }).map((_, i) => ({
+    id: `${i}`,
+    index: i + 1,
+    title: `TIÊU ĐỀ CHAT ${i + 1}`,
+    date: 'NGÀY TẠO',
+    summary: 'TÓM TẮT NỘI DUNG CUỘC TRÒ CHUYỆN'
+  }));
 
-    window.addEventListener("toggle-right-panel", handler);
+  const activeIdx = focus.section === 'center' ? focus.index % historyItems.length : -1;
 
-    return () => {
-      window.removeEventListener("toggle-right-panel", handler);
-    };
-  }, []);
-
-    const [notes, setNotes] = useState<Note[]>([]);
-
-    const handleDeleteNote = (id: number) =>{
-        setNotes(prev => prev.filter(note => note.id !== id));  
+  useEffect(() => {
+    if (activeIdx !== -1) {
+      historyRefs.current[activeIdx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+  }, [activeIdx]);
 
-    const[openHelp, setOpenHelp] = useState(false);
-    
-      useEffect( () => {
-          const handler = () => setOpenHelp(prev => !prev);
-          window.addEventListener("toggle-help-modal", handler);
-          return () => window.removeEventListener("toggle-help-modal", handler);
-      },[]);
-    
+  useHistoryHotkeys(searchRef);
 
-    return(
-        <div className="history-wrapper">
-
-            {openHelp && (
-        <div className="outside-background fixed inset-0 flex bg-black/50 items-center justify-center z-[999]">
-
-        <div className="main-background flex flex-col bg-gray-900 w-[90%] h-[80vh] max-h-[90vh] rounded-xl overflow-auto">
-          
-          <div className="openHelp-header flex border-b border-gray-500 h-[12%] items-center relative">
-            
-            <p className=" text-white flex-1 text-2xl font-semibold text-center">Tổ Hợp Phím Tắt</p>
-
-            <button className="top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center text-black text-lg font-bold bg-gray-300 hover:bg-gray-400 cursor-pointer absolute" onClick={() => setOpenHelp(false)}> X </button>
-
-          </div>
-
-
-          <div className="openHelp-main-content">
-
-
-          </div>
-
-
+  return (
+    <div className="flex-1 flex overflow-hidden w-full">
+      <div className="flex-1 flex flex-col p-10 bg-white overflow-y-auto items-center custom-scrollbar">
+        <div className="w-full max-w-3xl flex flex-col gap-4">
+           <div className="bg-gray-100 rounded-full py-3 px-8 mb-4 border-2 border-gray-200 focus-within:border-gray-800 transition-all">
+             <input ref={searchRef} type="text" placeholder="TÌM KIẾM LỊCH SỬ (/)" className="bg-transparent w-full text-xs font-bold uppercase outline-none" />
+           </div>
+           <div className="border border-gray-300 rounded-3xl overflow-hidden shadow-sm">
+             {historyItems.map((item, idx) => (
+               <div key={item.id} ref={el => { historyRefs.current[idx] = el; }}
+                 className={`p-6 flex flex-col gap-1 transition-all border-gray-200
+                   ${idx !== historyItems.length - 1 ? 'border-b' : ''} 
+                   ${idx === activeIdx ? 'bg-gray-200 shadow-inner ring-2 ring-gray-400' : 'bg-white opacity-100'}`}>
+                 <div className="flex items-center gap-2">
+                   <span className="text-xs font-bold">{item.index}.</span>
+                   <h3 className="text-xs font-bold uppercase">{item.title}</h3>
+                 </div>
+                 <p className="text-[10px] font-bold uppercase ml-5 mt-1">{item.summary}</p>
+               </div>
+             ))}
+           </div>
         </div>
-
       </div>
-      )}
-
-
-            <div className="history-navbar">
-                TÊN GHI CHÚ CỦA NGƯỜI TA
-            </div>
-
-            <div className="history-main-content">
-
-                <div className="left-panel">
-                    <input type="text" className="history-search" placeholder="TÌM KIẾM"/>
-                </div>
-
-                <div className={`right-panel bg-gray-200 rounded-xl overflow-y-auto transition-all duration-300
-                    ${openRightPanel ? "w-[350px]" : "w-0"} h-full`
-                }>
-                    <div className='right-panel-wrapper'>
-                        <h3 className="text-[14px] px-8 py-2 w-full"> GHI CHÚ </h3>    
-                        <input type="text" placeholder="TÌM KIẾM" className="bg-gray-400 h-7 rounded-full w-[80%] mt-4 border border-gray-400 pl-4 justify-center" />
-                        <button className='mt-3 bg-gray-400 px-4 py-1 rounded-xl text-sm'>
-                            LOC
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
+      <div className={`transition-all duration-300 border-l border-gray-200 overflow-hidden shrink-0 ${isSidebarOpen ? 'w-80' : 'w-0'}`}>
+        <div className="w-80 h-full">
+           <SidebarNotes notes={notes} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} isFocused={focus.section === 'right'} focusedIndex={focus.index} />
         </div>
-    )
-}
+      </div>
+    </div>
+  );
+};
+
+export default HistoryView;
