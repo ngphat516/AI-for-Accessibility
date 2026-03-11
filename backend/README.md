@@ -1,50 +1,111 @@
-Backend Setup Guide for Frontend
+# Backend Setup Guide for Frontend
 
-1. Cài đặt phần mềm cần thiết
+## 1. Install Required Software
 
 Docker + Docker Compose
 
-Kiểm tra Docker đã cài thành công:
+### Docker Version Note
 
+The backend was tested with the following versions:
+
+```
+Docker version 28.5.1
+Docker Compose version v2.40.3
+```
+
+**Do not need the exact same version**, but it is recommended to use:
+
+- Docker **>= 24**
+- Docker Compose **v2**
+
+Check if Docker is installed successfully:
+
+```bash
 docker --version
 docker compose version
+```
 
-2. Chạy Docker
+---
 
-Trong thư mục project chạy:
+## 2. Prepare Environment Variables
 
+Before running Docker, request the **`.env` file** from the backend team and place it inside the `/backend` folder.
+
+Structure:
+
+```
+project-root
+│
+├─ backend
+│  ├─ app
+│  ├─ .env
+│  ├─ Dockerfile
+│  └─ ...
+└─ 
+```
+
+The `.env` file should contain the following variables:
+
+```
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+DATABASE_URL=
+```
+
+Make sure the `.env` file is placed correctly in `/backend` **before running Docker**.
+
+---
+
+## 3. Run Docker
+
+Inside the project directory run:
+
+```bash
 docker compose up --build
+```
 
-Docker sẽ tự động:
+Docker will automatically:
 
-Tạo container database
+- Create the database container
+- Create the backend container
+- Connect backend with the database
+- Start the API server
 
-Tạo container backend
+---
 
-Kết nối backend với database
+## 4. Verify Backend is Running
 
-Chạy server API
+Open your browser:
 
-3. Kiểm tra backend đã chạy
-
-Mở trình duyệt:
-
+```
 http://localhost:8000/docs
+```
 
-Đây là Swagger UI để test API.
+This is the Swagger UI used to test the API.
 
-7. Dừng server
+---
 
-Trong terminal nhấn:
+## 5. Stop the Server
 
+In the terminal press:
+
+```
 Ctrl + C
+```
 
-hoặc chạy:
+Or run:
 
+```bash
 docker compose down
+```
 
-8. Chạy lại backend
+---
 
-Nếu đã build trước đó:
+## 6. Run Backend Again
 
+If it was already built before:
+
+```bash
 docker compose up
+```
