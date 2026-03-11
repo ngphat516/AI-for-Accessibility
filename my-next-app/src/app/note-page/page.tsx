@@ -1,114 +1,79 @@
-"use client";
 
-import './note-page.css'
-import { useEffect, useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Note } from '../../types';
+import { FocusSection } from '../../types';
+import { useNotesHotkeys } from './useNoteModalHotkeys';
 
-type Note = {
-    id : number;
-    text: string;
+interface NotesViewProps {
+  notes: Note[];
+  onSaveNote: (noteData: Partial<Note>, editingId?: string) => void;
+  onDeleteNote: (id: string) => void;
+  focus: { section: FocusSection, index: number };
 }
 
+const NotesView: React.FC<NotesViewProps> = ({ notes, onDeleteNote, focus }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
+  const noteRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-export default function NotePage(){
+  const filteredNotes = notes.filter(n => 
+    n.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    n.summary.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    const [notes, setNotes] = useState<Note[]>([]);
+  const activeIdx = focus.section === 'center' && filteredNotes.length > 0 ? focus.index % filteredNotes.length : -1;
 
-    const handleAddNote = () => {
-        const newNote = {
-            id: Date.now(),
-            text: "TIÊU ĐỀ",    
-        }
-        setNotes((prev) => [...prev, newNote]);
+  useEffect(() => {
+    if (activeIdx !== -1) {
+      noteRefs.current[activeIdx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+  }, [activeIdx]);
 
-    const handleDeleteNote = (id: number) =>{
-        setNotes(prev => prev.filter(note => note.id !== id));  
-    }
+  useNotesHotkeys(searchRef);
 
-    const[openHelp, setOpenHelp] = useState(false);
-    
-      useEffect( () => {
-          const handler = () => setOpenHelp(prev => !prev);
-          window.addEventListener("toggle-help-modal", handler);
-          return () => window.removeEventListener("toggle-help-modal", handler);
-      },[]);
-    
-
-    return(
-    <div className="note-wrapper">
-        
-          {/* Help Modal */}
-
-      {openHelp && (
-        <div className="outside-background fixed inset-0 flex bg-black/50 items-center justify-center z-[999]">
-
-        <div className="main-background flex flex-col bg-gray-900 w-[90%] h-[80vh] max-h-[90vh] rounded-xl overflow-auto">
-          
-          <div className="openHelp-header flex border-b border-gray-500 h-[12%] items-center relative">
-            
-            <p className=" text-white flex-1 text-2xl font-semibold text-center">Tổ Hợp Phím Tắt</p>
-
-            <button className="top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center text-black text-lg font-bold bg-gray-300 hover:bg-gray-400 cursor-pointer absolute" onClick={() => setOpenHelp(false)}> X </button>
-
+  return (
+    <div className="flex-1 bg-white overflow-y-auto p-10 flex flex-col items-center custom-scrollbar">
+      <div className="w-full max-w-6xl mb-10">
+        <div className="flex gap-4 items-center">
+          <div className="flex-1 bg-gray-100 rounded-full py-4 px-10 border-2 border-gray-200 focus-within:border-gray-800 transition-all shadow-sm">
+            <input ref={searchRef} type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="TÌM KIẾM GHI CHÚ (/)" className="bg-transparent w-full text-xs font-bold uppercase outline-none" />
           </div>
-
-
-          <div className="openHelp-main-content">
-
-
-          </div>
-
-
+          <button className="bg-gray-200 px-8 py-4 rounded-full text-xs font-bold uppercase hover:bg-gray-300 transition-all">LỌC</button>
         </div>
-
       </div>
-      )}
 
-        <div className="note-navbar">
-            <h2>TÊN GHI CHÚ CỦA NGƯỜI TA</h2>
-        </div>
-
-        <div className="note-main-content">
-            
-        
-            <div className="search-section">
-
-                <input className="note-search" placeholder="TÌM KIẾM"/>            
-
-                <div className="add-note" >
-                    <button className="add-btn" onClick={handleAddNote} >
-                        <h2 className="add-btn-main"> + THÊM GHI CHÚ  </h2>
-                    </button>
-                </div>
-
-
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl pb-20">
+        {filteredNotes.length === 0 ? (
+          <div className="col-span-full py-20 text-center opacity-30 italic font-black uppercase tracking-tighter">Trống</div>
+        ) : (
+          filteredNotes.map((note, idx) => (
+            <div key={note.id} ref={el => { noteRefs.current[idx] = el; }}
+              className={`bg-[#A8A8A8] rounded-[40px] p-8 flex flex-col transition-all duration-300 border-2
+                ${idx === activeIdx ? 'border-gray-800 bg-white shadow-2xl scale-[1.02]' : 'border-transparent opacity-100'}`}>
+               <div className="flex justify-between items-start mb-1">
+                 <h3 className="text-xs font-bold uppercase line-clamp-1">{note.title}</h3>
+                 <button onClick={() => onDeleteNote(note.id)} className="text-[9px] font-bold uppercase text-gray-600 hover:text-red-600">XÓA</button>
+               </div>
+               <p className="text-[10px] uppercase font-bold text-gray-600 mb-1">{note.chatContext}</p>
+               <p className="text-[10px] uppercase font-bold text-gray-500 mb-4">{note.createdAt}</p>
+               <div className="h-[4px] w-full bg-gray-400/30 rounded-full mb-6 overflow-hidden">
+                 <div className="h-full bg-gray-500 w-[60%]"></div>
+               </div>
+               <div className="space-y-3">
+                  {note.summary.split('\n').filter(l => l.trim()).slice(0, 4).map((line, lIdx) => (
+                    <div key={lIdx} className="flex gap-2 items-start">
+                      <span className="text-sm mt-[-4px]">•</span>
+                      <p className="text-[11px] uppercase font-bold leading-tight line-clamp-2">{line.replace(/^•\s*/, '')}</p>
+                    </div>
+                  ))}
+               </div>
             </div>
-            
-
-            <div className="note-list">
-            
-                {
-                    notes.map((item) => (
-                        <div key={item.id} className="note-item">
-                            
-                            <p className="font-semibold">{item.text}</p>
-                        
-                            <button className="delete-btn" onClick={() => handleDeleteNote(item.id)}>
-                              <p className="absolute text-[12px] top-4 right-4">XÓA</p>
-                            </button>
-                        `     <p className="absolute text-[12px] top-4 right-12">CHỈNH SỬA</p>
-                              <p className="absolute text-[12px] top-10 left-4">THUỘC VỀ ĐOẠN CHAT NÀO</p>
-                              <p className="absolute text-[12px] top-15">NGÀY TẠO</p>
-                              <p className="absolute text-[16px] top-22 font-semibold">TÓM TẮT</p>
-
-                        </div>
-                    ))
-                }
-
-            </div>
-
-        </div>
-
+          ))
+        )}
+      </div>
     </div>
-    )
-}
+  );
+};
+
+export default NotesView;
