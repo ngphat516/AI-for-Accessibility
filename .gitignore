@@ -10,6 +10,10 @@
 !.yarn/releases
 !.yarn/versions
 
+node_modules/
+.next/
+.env
+
 # testing
 /coverage
 
@@ -39,3 +43,40 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# ======================
+# PYTHON BACKEND
+# ======================
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+# virtual environment
+.venv/
+venv/
+env/
+
+# ======================
+# DOCKER
+# ======================
+
+docker-compose.override.yml
+*.log
+
+# ======================
+# IDE
+# ======================
+
+.vscode/
+.idea/
+
+# ======================
+# OS
+# ======================
+
+Thumbs.db
