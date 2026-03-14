@@ -18,14 +18,11 @@ services:
     container_name: fastapi_app
     env_file:
       - .env
-    volumes:
-      - .:/app
     depends_on:
       db:
         condition: service_healthy
     ports:
       - "8000:8000"
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
   postgres_data:
