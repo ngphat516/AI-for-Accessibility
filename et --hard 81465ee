@@ -1,0 +1,13 @@
+[33mac1ad20[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnphat[m[33m, [m[1;31morigin/nphat[m[33m)[m HEAD@{0}: reset: moving to HEAD
+[33mac1ad20[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnphat[m[33m, [m[1;31morigin/nphat[m[33m)[m HEAD@{1}: pull origin nphat: Merge made by the 'ort' strategy.
+[33m81465ee[m HEAD@{2}: commit: aaa
+[33m3da5da0[m[33m ([m[1;32mmain[m[33m)[m HEAD@{3}: checkout: moving from main to nphat
+[33m3da5da0[m[33m ([m[1;32mmain[m[33m)[m HEAD@{4}: commit: fix dashboard
+[33me37f17e[m HEAD@{5}: commit: create hướng dẫn button, update its function. Fix footer by wrong placement
+[33m0891a33[m HEAD@{6}: commit: update conversation section and create history sectionr
+[33m057afe0[m HEAD@{7}: commit: create and update conversation, note-page folder
+[33m2677f81[m HEAD@{8}: commit: create header, footer and dashboard
+[33m59cb330[m HEAD@{9}: commit: add next repo
+[33m31b44ce[m HEAD@{10}: commit: update index.css at Login Page
+[33mc65651f[m HEAD@{11}: commit: fix bug LoginLayout.jsx and LoginPage.jsx
+[33m5f060c0[m HEAD@{12}: commit: create LoginLayout and LoginPage
