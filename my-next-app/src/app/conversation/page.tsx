@@ -5,6 +5,7 @@ import SidebarAI from '../components/SidebarAI';
 import { Note } from '../../types';
 import { FocusSection } from '../../types';
 import { useChatHotkeys } from './useChatHotkeys';
+import { createMessage, getMessage } from '../api/chatMessagesApi';
 
 interface Message {
   id: string;
@@ -39,7 +40,15 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, notes, onSaveNote, o
   
   const [globalWordIdx, setGlobalWordIdx] = useState(0);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [messages, setMessages] = useState<Message[]>(SAMPLE_MESSAGES)
 
+  const handleSendMessages = async (text: string) => {
+    const data = await createMessage(1, text);  
+    console.log(data)
+    setMessages([...messages, data])
+  }
+
+ 
   const flattenedWords = useMemo(() => {
     const words: { msgIdx: number; wordIdx: number; text: string }[] = [];
     SAMPLE_MESSAGES.forEach((msg, mIdx) => {
@@ -113,7 +122,7 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, notes, onSaveNote, o
                 const isMsgFocused = flattenedWords[globalWordIdx]?.msgIdx === mIdx && isCenterFocused;
                 const msgWords = msg.content.split(/\s+/);
                 let wordBaseIdx = 0;
-                for(let i=0; i<mIdx; i++) wordBaseIdx += SAMPLE_MESSAGES[i].content.split(/\s+/).length;
+                for(let i=0; i<mIdx; i++) wordBaseIdx += messages[i].content.split(/\s+/).length;
 
                 return (
                   <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
@@ -168,7 +177,17 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, notes, onSaveNote, o
           <div className="max-w-4xl mx-auto flex gap-4 items-center">
             <input ref={inputRef} onFocus={() => setIsInputFocused(true)} onBlur={() => setIsInputFocused(false)}
                 type="text" placeholder="NHẬP NỘI DUNG..."
-                className="w-full bg-gray-100 border-2 rounded-full py-4 px-8 text-[12px] font-bold uppercase outline-none focus:bg-white focus:border-gray-800 transition-all" />
+                className="w-full bg-gray-100 border-2 rounded-full py-4 px-8 text-[12px] font-bold uppercase outline-none focus:bg-white focus:border-gray-800 transition-all" 
+                onKeyDown={
+                  (e) => {
+                    if (e.key == 'Enter'){
+                      const text = e.currentTarget.value;
+                      handleSendMessages(text);
+                      e.currentTarget.value=''
+                    }
+                  }
+                }
+                />
           </div>
         </div>
       </div>
