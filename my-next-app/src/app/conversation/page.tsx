@@ -5,7 +5,9 @@ import SidebarAI from '../components/SidebarAI';
 import { Note } from '../../types';
 import { FocusSection } from '../../types';
 import { useChatHotkeys } from './useChatHotkeys';
-import { createMessage, getMessage } from '../api/chatMessagesApi';
+import { createMessage} from '../api/chatMessagesApi';
+import { createConversation } from '../api/conversationApi';
+import { createNote, getuserId, updateNote, deleteNote } from '../api/noteApi';
 
 interface Message {
   id: string;
@@ -15,10 +17,7 @@ interface Message {
 }
 
 interface ChatViewProps {
-  isSidebarOpen: boolean;
-  notes: Note[];
-  onSaveNote: (noteData: Partial<Note>, editingId?: string) => void;
-  onDeleteNote: (id: string) => void;
+  isSidebarOpen: boolean; 
   focus: { section: FocusSection, index: number };
   setFocus: React.Dispatch<React.SetStateAction<{ section: FocusSection, index: number }>>;
   isModalOpen?: boolean;
@@ -33,14 +32,16 @@ const SAMPLE_MESSAGES: Message[] = [
   { id: '6', role: 'assistant', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis et dapibus tortor. Quisque elementum ipsum enim, ut tincidunt lectus rhoncus sed. Duis vulputate non sapien quis fermentum. Aenean libero nunc, ultricies eget mi ut, sagittis luctus metus. Phasellus elit orci, mollis eget sapien ac, pellentesque ultricies dui. Curabitur in ipsum augue. Donec rutrum ante dolor, nec suscipit nulla pharetra in. Praesent et magna blandit, consequat metus ut, mattis metus. Fusce viverra malesuada lorem, vel dignissim eros varius sed. Nam efficitur, quam vel aliquam tincidunt, tellus ante tristique ipsum, a lacinia justo neque non tortor. Cras feugiat tortor eu tortor rutrum cursus. Aenean faucibus nibh purus, tempus commodo lorem ullamcorper quis. Aenean ac metus massa. Sed rutrum orci nec tortor molestie, commodo efficitur augue sagittis. Cras eget ornare massa. Cras sit amet libero nunc. Cras elementum dapibus consectetur. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed eget commodo ligula, nec pulvinar tellus. Integer iaculis laoreet mauris, nec efficitur est porta at. Praesent fringilla tortor nisl, in sollicitudin risus vulputate vitae. Integer pulvinar eu est sit amet laoreet. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam consequat tempus metus, nec eleifend sapien consequat at. Sed rutrum vel nisl et lacinia. Integer scelerisque aliquam turpis vel luctus. Integer venenatis, est vel accumsan pulvinar, libero massa ullamcorper nulla, ac sodales ex nibh ac lorem. Morbi facilisis lacus urna. Duis condimentum blandit mi, eget pharetra orci dignissim non. Aenean in sollicitudin est. Etiam imperdiet ex vitae ipsum commodo, quis bibendum sem faucibus. Ut in ipsum id enim gravida fermentum. Suspendisse sodales orci non mattis rhoncus. Mauris sodales cursus odio, non auctor nibh eleifend sit amet. Cras sed nisi consequat, ultricies erat at, vestibulum odio. Sed viverra interdum eros, at tincidunt odio fringilla non. Nullam ut ligula vel urna dictum luctus. Nunc gravida, diam sit amet semper blandit, dui nibh pretium urna, sed fermentum tellus leo nec tellus. Maecenas cursus consequat dui, sed consectetur erat maximus ac. Sed dapibus dui at urna venenatis, vel porttitor eros viverra. Duis et enim dictum, maximus erat nec, ultricies nibh. Pellentesque eget elementum dui, in volutpat libero. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vivamus lacinia efficitur lorem tincidunt sollicitudin. Aliquam erat volutpat. Cras eu est auctor, finibus risus quis, efficitur nibh. Praesent posuere, justo non euismod cursus, risus velit viverra lorem, at tempus sapien massa eget libero. Aliquam viverra lorem at sapien dapibus, a pretium purus volutpat. Morbi elementum in arcu sollicitudin vulputate. Curabitur auctor, est ut dictum vulputate, felis justo efficitur odio, nec consequat libero orci vel dolor. Donec egestas pretium feugiat. Integer feugiat augue libero, in euismod odio semper eget. Vivamus interdum condimentum turpis, quis accumsan enim fringilla ac.', time: '14:21' },
 ];
 
-const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, notes, onSaveNote, onDeleteNote, focus, setFocus, isModalOpen }) => {
+const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isModalOpen }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const timelineRefs = useRef<(HTMLButtonElement | null)[]>([]);
   
   const [globalWordIdx, setGlobalWordIdx] = useState(0);
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(SAMPLE_MESSAGES)
+  const [messages, setMessages] = useState<Message[]>(SAMPLE_MESSAGES);
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [notes, setNotes] = useState<Note[]>([])
 
   const handleSendMessages = async (text: string) => {
     const data = await createMessage(1, text);  
@@ -48,7 +49,63 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, notes, onSaveNote, o
     setMessages([...messages, data])
   }
 
- 
+  const handleCreateConversation = async () => {
+    const data = await createConversation(1, "AI chat");
+    console.log(data);
+    setConversations([...conversations, data]);
+  }
+
+  useEffect(() => {
+      const fetchNotes = async () => {
+        try {
+          const data = await getuserId(1);
+
+          const formattedNotes = data.map((item: any) => ({
+            id: item.id.toString(),
+            title: item.title,
+            summary: item.content || "", // Tùy backend bạn lưu nội dung ở trường nào
+            createdAt: item.created_at ? new Date(item.created_at).toLocaleDateString() : "",
+            chatContext: ""
+          }));
+            setNotes(formattedNotes)
+        }
+        catch (error){
+          console.error("Lỗi tải ghi chú:", error)
+        }
+      };
+      fetchNotes();
+  }, [])
+
+  const handleSaveNote = async (noteData: Partial<Note>, editingId?: string) => {
+    try {
+      if (editingId) {
+        await updateNote(Number(editingId), noteData.title || "");
+        setNotes(notes.map(n => n.id === editingId ? { ...n, ...noteData } : n));
+      } else {
+        const newNote = await createNote(1, noteData.title || "Không có tiêu đề", noteData.summary || "");
+        const formattedNewNote: Note = {
+          id: newNote.id.toString(),
+          title: newNote.title,
+          summary: newNote.content || noteData.summary || "",
+          createdAt: new Date().toLocaleDateString(),
+          chatContext: ""
+        };
+        setNotes([...notes, formattedNewNote]);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lưu ghi chú:", error);
+    }
+  }
+
+  const handleDeleteNote = async (id: string) => {
+    try {
+      await deleteNote(Number(id));
+      setNotes(notes.filter(n => n.id !== id));
+    } catch (error) {
+      console.error("Lỗi khi xóa ghi chú:", error);
+    }
+  };
+
   const flattenedWords = useMemo(() => {
     const words: { msgIdx: number; wordIdx: number; text: string }[] = [];
     SAMPLE_MESSAGES.forEach((msg, mIdx) => {
@@ -194,7 +251,7 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, notes, onSaveNote, o
 
       <div className={`transition-all duration-500 border-l border-gray-200 overflow-hidden shrink-0 ${isSidebarOpen ? 'w-80' : 'w-0'}`}>
         <div className="w-80 h-full">
-           <SidebarNotes notes={notes} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} isFocused={!isModalOpen && focus.section === 'right'} focusedIndex={focus.index} />
+           <SidebarNotes notes={notes} onSaveNote={handleSaveNote} onDeleteNote={handleDeleteNote} isFocused={!isModalOpen && focus.section === 'right'} focusedIndex={focus.index} />
         </div>
       </div>
     </div>

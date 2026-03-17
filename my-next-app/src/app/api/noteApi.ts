@@ -1,7 +1,7 @@
 import { BASE_URL } from "../config/apiConfig";
 
 export const createNote = async (userId:number, title:string, content:string) =>{
-    const response = await fetch(`${BASE_URL}/notes/`,{
+    const response = await fetch(`${BASE_URL}/notes`,{
         method: "POST",
         headers:{
             "Content-type":"application/json"
@@ -16,7 +16,7 @@ export const createNote = async (userId:number, title:string, content:string) =>
 }
 
 export const getNote = async () => {
-    const response = await fetch(`${BASE_URL}/notes/`,{
+    const response = await fetch(`${BASE_URL}/notes`,{
         method: "GET",
         headers:{
             "Content-type":"application/json"
@@ -26,7 +26,7 @@ export const getNote = async () => {
 }
 
 export const getuserId = async (userId: number) => {
-    const response = await fetch (`${BASE_URL}/notes/user/${userId}/`, {
+    const response = await fetch (`${BASE_URL}/notes/user/${userId}`, {
         method: "GET",
         headers:{
             "Content-type":"application/json"
