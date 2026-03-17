@@ -5,9 +5,10 @@ import SidebarAI from '../components/SidebarAI';
 import { Note } from '../../types';
 import { FocusSection } from '../../types';
 import { useChatHotkeys } from './useChatHotkeys';
-import { createMessage} from '../api/chatMessagesApi';
+import { createMessage, chatMessage, chatMessageId} from '../api/chatMessagesApi';
 import { createConversation } from '../api/conversationApi';
 import { createNote, getuserId, updateNote, deleteNote } from '../api/noteApi';
+import { getNoteMessageSources, deleteNoteMessageSources, createNoteMessageSources } from '../api/noteMessageSourcesApi';
 
 interface Message {
   id: string;
@@ -21,6 +22,12 @@ interface ChatViewProps {
   focus: { section: FocusSection, index: number };
   setFocus: React.Dispatch<React.SetStateAction<{ section: FocusSection, index: number }>>;
   isModalOpen?: boolean;
+}
+
+interface Source{
+  id: string;
+  title: string;
+  snippet ?: string;
 }
 
 const SAMPLE_MESSAGES: Message[] = [
@@ -39,22 +46,47 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isM
   
   const [globalWordIdx, setGlobalWordIdx] = useState(0);
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(SAMPLE_MESSAGES);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [conversations, setConversations] = useState<any[]>([]);
   const [notes, setNotes] = useState<Note[]>([])
+  const [sources, setSources] = useState<Source[]>([])
+
+// chatmessages.ts
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+        try{
+          const data = await chatMessage();
+          const formattedMessages = data.map( (msg: any) => ({
+            id : msg.id.toString(),
+            role: msg.role,
+            content: msg.content || "",
+            time: msg.create_at ? new Date(msg.create_at).toLocaleDateString([], { hour : '2-digit', minute: '2-digit'}) : "Vừa xong"
+      }));
+          setMessages(formattedMessages);
+          } catch (error) {
+          console.error("Lỗi khi tải lịch sử tin nhắn:", error)
+        }
+    }
+    fetchChatHistory();
+   }, [])
 
   const handleSendMessages = async (text: string) => {
-    const data = await createMessage(1, text);  
-    console.log(data)
-    setMessages([...messages, data])
+    try {
+      const data = await createMessage(1, text);  
+      const newMsg: Message = {
+        id: data.id ? data.id.toString() : Date.now().toString(),
+        role: 'user', 
+        content: text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+      setMessages(prev => [...prev, newMsg]);
+    } catch (error) {
+      console.error("Lỗi khi gửi tin nhắn:", error);
+    }
   }
 
-  const handleCreateConversation = async () => {
-    const data = await createConversation(1, "AI chat");
-    console.log(data);
-    setConversations([...conversations, data]);
-  }
 
+//noteApi.ts
   useEffect(() => {
       const fetchNotes = async () => {
         try {
@@ -106,6 +138,47 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isM
     }
   };
 
+// noteMessageSourcesApi.ts
+  useEffect(() => {
+    const fetchSources = async () => {
+      try{
+        const data = await getNoteMessageSources(1);
+        const formattedSources = data.map((item:any) => ({
+          id:item.id.toString(),
+          title: item.title || "Tài liệu tham khảo",
+          snippet: item.content || "Nội dung trích xuất"
+        }));
+        setSources(formattedSources)
+      }
+      catch (error){
+          console.error("Lỗi khi tải tài liệu nguồn:", error);
+      } 
+    }
+    fetchSources();
+  }, [])
+
+  const handleAddSources = async (noteId:number, chatMessageId: number ) => {
+      try{
+        await createNoteMessageSources(noteId, chatMessageId); 
+        console.log("Thêm tài liệu thành công!");
+      }
+      catch (error){
+        console.error("Lỗi khi thêm tài liệu:", error)
+      }
+  }
+
+  const handleDeleteSources = async (noteId: number, chatMessageId: number) => {
+    try{
+      await deleteNoteMessageSources(noteId, chatMessageId);
+      setSources(sources.filter( x => x.id !== noteId.toString()));
+      console.log("Xóa tài liệu thành công!");
+    }
+    catch (error){
+      console.error("Lỗi khi xóa tài liệu:", error);
+    }
+  }
+
+//end
   const flattenedWords = useMemo(() => {
     const words: { msgIdx: number; wordIdx: number; text: string }[] = [];
     SAMPLE_MESSAGES.forEach((msg, mIdx) => {
@@ -114,12 +187,12 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isM
       });
     });
     return words;
-  }, []);
+  }, [messages]);
 
   const isCenterFocused = focus.section === 'center';
   const userMessageIndices = useMemo(() => {
     return SAMPLE_MESSAGES.map((m, i) => m.role === 'user' ? i : -1).filter(i => i !== -1);
-  }, []);
+  }, [messages]);
 
   const getDotIdxFromWord = (wordIdx: number) => {
     const msgIdx = flattenedWords[wordIdx]?.msgIdx ?? 0;
@@ -155,7 +228,7 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isM
     isInputFocused,
     canNav,
     globalWordIdx,
-    messageCount: SAMPLE_MESSAGES.length,
+    messageCount: messages.length,
     moveWord,
     flattenedWords
   });
@@ -170,12 +243,12 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isM
 
   return (
     <div className="flex-1 flex overflow-hidden w-full">
-      <SidebarAI isFocused={!isModalOpen && focus.section === 'left'} focusedIndex={focus.index} />
+      <SidebarAI sources={sources} isFocused={!isModalOpen && focus.section === 'left'} focusedIndex={focus.index} />
       <div className={`flex-1 flex flex-col bg-white overflow-hidden transition-all relative ${isCenterFocused && !isModalOpen ? 'bg-gray-50' : ''}`}>
         <div className="flex-1 flex overflow-hidden">
           <div ref={chatContainerRef} className="flex-1 p-6 overflow-y-auto space-y-8 custom-scrollbar">
             <div className="max-w-3xl mx-auto space-y-6 pb-32 pt-10">
-              {SAMPLE_MESSAGES.map((msg, mIdx) => {
+              {messages.map((msg, mIdx) => {
                 const isMsgFocused = flattenedWords[globalWordIdx]?.msgIdx === mIdx && isCenterFocused;
                 const msgWords = msg.content.split(/\s+/);
                 let wordBaseIdx = 0;

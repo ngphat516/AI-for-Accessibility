@@ -24,7 +24,7 @@ export const getNoteMessageSources = async (noteId: Number) => {
     return response.json()
 }
 
-export const deteleNoteMessageSources = async (deteleId: number, chatmessagesId:number) => {
+export const deleteNoteMessageSources = async (deteleId: number, chatmessagesId:number) => {
     const response = await fetch(`${BASE_URL}/note-sources/${deteleId}/${chatmessagesId}`,{
         method: "DELETE",
         headers:{

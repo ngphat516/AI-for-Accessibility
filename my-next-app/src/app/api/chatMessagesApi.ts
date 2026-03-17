@@ -14,7 +14,7 @@ export const createMessage = async (userId:number, title:string) =>{
     return response.json();
 }
 
-export const getMessage = async () => {
+export const chatMessage = async () => {
     const response = await fetch(`${BASE_URL}/chatmessages/`,{
         method: "GET",
         headers:{
@@ -24,7 +24,7 @@ export const getMessage = async () => {
     return response.json()
 }
 
-export const getMessageId = async (messageId: number) => {
+export const chatMessageId = async (messageId: number) => {
     const response = await fetch(`${BASE_URL}/chatmessages/${messageId}`,{
         method: "GET",
         headers:{
