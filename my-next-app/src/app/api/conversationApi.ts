@@ -40,7 +40,7 @@ export const getConversationById = async (conversationId:number) => {
     const response = await fetch (`${BASE_URL}/conversations/${conversationId}`, {
         method:"GET",
         headers:{
-            "Content-type": "applicaton/json"
+            "Content-type": "application/json"
         }
     })
     return response.json();
@@ -50,7 +50,7 @@ export const updateConversation = async (updateId:number, newTitle:string) => {
     const response = await fetch (`${BASE_URL}/conversations/${updateId}`,{
         method: "PUT",
         headers:{
-            "Content-type": "applications/json"
+            "Content-type": "application/json"
         },
         body: JSON.stringify({
             title: newTitle,
@@ -63,7 +63,7 @@ export const deleteConversation = async (deleteId:number) => {
     const response = await fetch (`${BASE_URL}/conversations/${deleteId}`,{
         method: "DELETE",
         headers:{
-            "Content-type":"applications/json"
+            "Content-type":"application/json"
         }
     })
     return response.json();
