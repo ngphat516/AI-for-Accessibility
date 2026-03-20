@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from app.database import engine, Base
 from app.routers import conversation, chat_message, note, note_message_source, voice
+from dotenv import load_dotenv
+
+load_dotenv()
 
 Base.metadata.create_all(bind=engine)
 

@@ -9,8 +9,9 @@ router = APIRouter(prefix="/voice", tags=["Voice"])
 
 
 VOICE_OPTIONS = {
-    1: "JBFqnCBsd6RMkjVDRZzb",
-    2: "pNInz6obpgDQGcFmaJgB"
+    1: "FTYCiQT21H9XQvhRu0ch",  # MinhTrung (Male, Native Vietnamese)
+    2: "a3AkyqGG4v8Pg7SWQ0Y3",  # Ngan (Female, Native Vietnamese)
+    3: "KkZEqzG4FfkIHMbzFAnu"   # Nam (Male, Southern Native Vietnamese)
 }
 
 def _generate_audio(text: str, voice_option: Optional[int]):
@@ -26,7 +27,8 @@ def _generate_audio(text: str, voice_option: Optional[int]):
         audio_generator = client.text_to_speech.convert(
             text=text,
             voice_id=voice_id,
-            model_id="eleven_multilingual_v2",
+            model_id="eleven_v3",
+            language_code="vi",
             output_format="mp3_44100_128",
         )
         
