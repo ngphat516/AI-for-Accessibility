@@ -56,7 +56,7 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isM
     const fetchChatHistory = async () => {
         try{
           const data = await chatMessage();
-          const formattedMessages = data.map( (msg: any) => ({
+          const formattedMessages = data.map((msg: any) => ({
             id : msg.id.toString(),
             role: msg.role,
             content: msg.content || "",
