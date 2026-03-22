@@ -1,21 +1,24 @@
 import { BASE_URL } from "../config/apiConfig";
 
-export const createMessage = async (userId: number, title: string) => {
+
+export const createMessage = async (conversationId: number, senderType: 'user' | 'ai', content: string) => {
   const response = await fetch(`${BASE_URL}/messages/`, {
     method: "POST",
     headers: {
       "Content-type": "application/json",
     },
-    body: JSON.stringify({
-      user_id: userId,
 
-      title: title,
+    body: JSON.stringify({
+      conversation_id: conversationId,
+      sender_type: senderType,
+      content: content,
     }),
   });
   return response.json();
 };
 
-export const chatMessage = async () => {
+
+export const getMessages = async () => {
   const response = await fetch(`${BASE_URL}/messages/`, {
     method: "GET",
     headers: {
@@ -25,7 +28,8 @@ export const chatMessage = async () => {
   return response.json();
 };
 
-export const chatMessageId = async (messageId: number) => {
+
+export const getMessageById = async (messageId: number) => {
   const response = await fetch(`${BASE_URL}/messages/${messageId}`, {
     method: "GET",
     headers: {
@@ -35,14 +39,14 @@ export const chatMessageId = async (messageId: number) => {
   return response.json();
 };
 
-export const updateMessage = async (updateId: number, newTitle: string) => {
+export const updateMessage = async (updateId: number, newContent: string) => {
   const response = await fetch(`${BASE_URL}/messages/${updateId}`, {
     method: "PUT",
     headers: {
       "Content-type": "application/json",
     },
     body: JSON.stringify({
-      title: newTitle,
+      content: newContent,
     }),
   });
   return response.json();

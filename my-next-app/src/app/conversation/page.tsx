@@ -5,7 +5,7 @@ import SidebarAI from '../components/SidebarAI';
 import { Note } from '../../types';
 import { FocusSection } from '../../types';
 import { useChatHotkeys } from './useChatHotkeys';
-import { createMessage, chatMessage, chatMessageId} from '../api/chatMessagesApi';
+import { createMessage, getMessages, updateMessage, deleteMessage} from '../api/chatMessagesApi';
 import { createConversation } from '../api/conversationApi';
 import { createNote, getuserId, updateNote, deleteNote } from '../api/noteApi';
 import { getNoteMessageSources, deleteNoteMessageSources, createNoteMessageSources } from '../api/noteMessageSourcesApi';
@@ -55,10 +55,10 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isM
   useEffect(() => {
     const fetchChatHistory = async () => {
         try{
-          const data = await chatMessage();
+          const data = await getMessages();
           const formattedMessages = data.map((msg: any) => ({
             id : msg.id.toString(),
-            role: msg.role,
+            role: msg.sender_type === 'ai' ? 'assistant' : 'user',
             content: msg.content || "",
             time: msg.create_at ? new Date(msg.create_at).toLocaleDateString([], { hour : '2-digit', minute: '2-digit'}) : "Vừa xong"
       }));
@@ -72,7 +72,8 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isM
 
   const handleSendMessages = async (text: string) => {
     try {
-      const data = await createMessage(1, text);  
+      const data = await createMessage(1, 'user', text);  
+      
       const newMsg: Message = {
         id: data.id ? data.id.toString() : Date.now().toString(),
         role: 'user', 
