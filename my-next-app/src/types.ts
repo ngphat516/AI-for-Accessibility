@@ -23,3 +23,30 @@ export interface ChatHistoryItem {
 }
 
 export type FocusSection = 'header' | 'left' | 'center' | 'right' | 'footer';
+
+export interface Conversations {
+  id: number;
+  user_id: number;
+  title: string;
+}
+
+export interface ChatMessages {
+  id: number;
+  conversation_id: number;
+  sender_type: 'user' | 'bot' | 'agent' | 'system';
+  content: string;
+  generated_links?: Record<string, any>[];
+  audio_url?: string;
+}
+
+export interface Notes {
+  id: number;
+  user_id: number;
+  title: string;
+  content: string;
+}
+
+export interface NoteMessageSources {
+  note_id: number;
+  chat_message_id: number;
+}

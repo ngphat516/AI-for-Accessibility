@@ -1,9 +1,11 @@
+"use client";
 
 import React, { useEffect, useRef } from 'react';
 
 interface SidebarAIProps {
   isFocused?: boolean;
   focusedIndex?: number;
+  sources?: any[];  
 }
 
 const SidebarAI: React.FC<SidebarAIProps> = ({ isFocused, focusedIndex }) => {
