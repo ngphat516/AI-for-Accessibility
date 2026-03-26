@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import { Note } from "../../types";
 import { useSidebarNotesHotkeys } from "./useSidebarNotesHotkeys";
@@ -11,7 +13,7 @@ interface SidebarNotesProps {
 }
 
 const SidebarNotes: React.FC<SidebarNotesProps> = ({
-  notes,
+  notes = [],
   onSaveNote,
   onDeleteNote,
   isFocused,

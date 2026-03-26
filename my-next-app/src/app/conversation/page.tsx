@@ -1,3 +1,4 @@
+"use client";
 
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import SidebarNotes from '../components/SideBarNotes';
@@ -42,7 +43,7 @@ const SAMPLE_MESSAGES: Message[] = [
   { id: '6', role: 'assistant', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis et dapibus tortor. Quisque elementum ipsum enim, ut tincidunt lectus rhoncus sed. Duis vulputate non sapien quis fermentum. Aenean libero nunc, ultricies eget mi ut, sagittis luctus metus. Phasellus elit orci, mollis eget sapien ac, pellentesque ultricies dui. Curabitur in ipsum augue. Donec rutrum ante dolor, nec suscipit nulla pharetra in. Praesent et magna blandit, consequat metus ut, mattis metus. Fusce viverra malesuada lorem, vel dignissim eros varius sed. Nam efficitur, quam vel aliquam tincidunt, tellus ante tristique ipsum, a lacinia justo neque non tortor. Cras feugiat tortor eu tortor rutrum cursus. Aenean faucibus nibh purus, tempus commodo lorem ullamcorper quis. Aenean ac metus massa. Sed rutrum orci nec tortor molestie, commodo efficitur augue sagittis. Cras eget ornare massa. Cras sit amet libero nunc. Cras elementum dapibus consectetur. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed eget commodo ligula, nec pulvinar tellus. Integer iaculis laoreet mauris, nec efficitur est porta at. Praesent fringilla tortor nisl, in sollicitudin risus vulputate vitae. Integer pulvinar eu est sit amet laoreet. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam consequat tempus metus, nec eleifend sapien consequat at. Sed rutrum vel nisl et lacinia. Integer scelerisque aliquam turpis vel luctus. Integer venenatis, est vel accumsan pulvinar, libero massa ullamcorper nulla, ac sodales ex nibh ac lorem. Morbi facilisis lacus urna. Duis condimentum blandit mi, eget pharetra orci dignissim non. Aenean in sollicitudin est. Etiam imperdiet ex vitae ipsum commodo, quis bibendum sem faucibus. Ut in ipsum id enim gravida fermentum. Suspendisse sodales orci non mattis rhoncus. Mauris sodales cursus odio, non auctor nibh eleifend sit amet. Cras sed nisi consequat, ultricies erat at, vestibulum odio. Sed viverra interdum eros, at tincidunt odio fringilla non. Nullam ut ligula vel urna dictum luctus. Nunc gravida, diam sit amet semper blandit, dui nibh pretium urna, sed fermentum tellus leo nec tellus. Maecenas cursus consequat dui, sed consectetur erat maximus ac. Sed dapibus dui at urna venenatis, vel porttitor eros viverra. Duis et enim dictum, maximus erat nec, ultricies nibh. Pellentesque eget elementum dui, in volutpat libero. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vivamus lacinia efficitur lorem tincidunt sollicitudin. Aliquam erat volutpat. Cras eu est auctor, finibus risus quis, efficitur nibh. Praesent posuere, justo non euismod cursus, risus velit viverra lorem, at tempus sapien massa eget libero. Aliquam viverra lorem at sapien dapibus, a pretium purus volutpat. Morbi elementum in arcu sollicitudin vulputate. Curabitur auctor, est ut dictum vulputate, felis justo efficitur odio, nec consequat libero orci vel dolor. Donec egestas pretium feugiat. Integer feugiat augue libero, in euismod odio semper eget. Vivamus interdum condimentum turpis, quis accumsan enim fringilla ac.', time: '14:21' },
 ];
 
-const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isModalOpen, notes, onSaveNote, onDeleteNote }) => {
+const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus = { section: 'center', index: 0 }, setFocus = () => {} , isModalOpen, notes, onSaveNote, onDeleteNote }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const timelineRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -87,10 +88,6 @@ const ChatView: React.FC<ChatViewProps> = ({ isSidebarOpen, focus, setFocus, isM
       console.error("Lỗi khi gửi tin nhắn:", error);
     }
   }
-
-
-//noteApi.ts
-  
 
 // noteMessageSourcesApi.ts
   useEffect(() => {
