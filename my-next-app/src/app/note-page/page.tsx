@@ -1,3 +1,4 @@
+"use client";
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Note } from '../../types';
@@ -11,7 +12,8 @@ interface NotesViewProps {
   focus: { section: FocusSection, index: number };
 }
 
-const NotesView: React.FC<NotesViewProps> = ({ notes, onDeleteNote, focus }) => {
+const DEFAULT_FOCUS = { section: 'center' as FocusSection, index: 0 };
+const NotesView: React.FC<NotesViewProps> = ({ notes = [], onDeleteNote = () => {}, focus = DEFAULT_FOCUS }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
   const noteRefs = useRef<(HTMLDivElement | null)[]>([]);

@@ -1,3 +1,4 @@
+"use client";
 
 import React, { useRef, useEffect } from 'react';
 import SidebarNotes from '../components/SideBarNotes';
@@ -13,7 +14,8 @@ interface HistoryViewProps {
   focus: { section: FocusSection, index: number };
 }
 
-const HistoryView: React.FC<HistoryViewProps> = ({ isSidebarOpen, notes, onSaveNote, onDeleteNote, focus }) => {
+const DEFAULT_FOCUS = { section: 'center' as FocusSection, index: 0 };
+const HistoryView: React.FC<HistoryViewProps> = ({ isSidebarOpen = false, notes = [], onSaveNote = () => {}, onDeleteNote = () => {}, focus = DEFAULT_FOCUS }) => {
   const searchRef = useRef<HTMLInputElement>(null);
   const historyRefs = useRef<(HTMLDivElement | null)[]>([]);
 
